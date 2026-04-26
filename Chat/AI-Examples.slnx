@@ -1,0 +1,27 @@
+<Solution>
+  <Folder Name="/Aspire/" />
+  <Folder Name="/Blazor/" />
+  <Folder Name="/Chat/">
+    <Project Path="BasicAwsBedrock/BasicAwsBedrock.csproj" />
+    <Project Path="BasicAzureOpenApi/BasicAzureOpenApi.csproj" />
+    <Project Path="BasicOllama/BasicOllama.csproj" />
+  </Folder>
+  <Folder Name="/Chat/MEAI/">
+    <Project Path="MeaiOllama/MeaiOllama.csproj" />
+  </Folder>
+  <Folder Name="/MCP/" />
+  <Folder Name="/RAG/" />
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="AGENTS.md" />
+    <File Path="AI-Examples.sln.DotSettings" />
+    <File Path="Analyzers.ruleset" />
+    <File Path="CLAUDE.md" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="WorkOllama/WorkOllama.csproj" />
+</Solution>
