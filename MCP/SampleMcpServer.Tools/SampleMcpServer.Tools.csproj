@@ -7,10 +7,11 @@
     <LangVersion>latest</LangVersion>
     <RootNamespace>SampleMcpServer.Tools</RootNamespace>
     <IsAotCompatible>true</IsAotCompatible>
+    <NoWarn>$(NoWarn);MCPEXP001</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ModelContextProtocol.Core" Version="1.2.0" />
+    <PackageReference Include="ModelContextProtocol" Version="1.2.0" />
   </ItemGroup>
 
 </Project>

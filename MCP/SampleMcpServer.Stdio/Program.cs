@@ -11,7 +11,10 @@ builder.Logging.AddConsole(options =>
 });
 
 builder.Services
-    .AddMcpServer()
+    .AddMcpServer(options =>
+    {
+        McpServerConfiguration.Configure(options);
+    })
     .WithStdioServerTransport()
     .WithResources<ServerResourceCatalog>()
     .WithPrompts<ServerPromptCatalog>()

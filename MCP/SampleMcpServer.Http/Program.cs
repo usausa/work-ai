@@ -3,7 +3,10 @@ using SampleMcpServer.Tools;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
-    .AddMcpServer()
+    .AddMcpServer(options =>
+    {
+        McpServerConfiguration.Configure(options);
+    })
     .WithHttpTransport()
     .WithResources<ServerResourceCatalog>()
     .WithPrompts<ServerPromptCatalog>()

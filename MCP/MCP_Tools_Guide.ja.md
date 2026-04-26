@@ -10,6 +10,16 @@
 
 ## このサンプルで使っている属性
 
+このサンプルでは、tool だけでなく resource / prompt も公開する構成に拡張しています。現在使っている主な属性は次のとおりです。
+
+- `McpServerToolType`
+- `McpServerTool`
+- `McpServerResourceType`
+- `McpServerResource`
+- `McpServerPromptType`
+- `McpServerPrompt`
+- `Description`
+
 ### 1. `McpServerToolType`
 
 ツールをまとめるクラスに付与します。
@@ -121,6 +131,114 @@ public static double Add(
 - `"Parameter a."`
 - `"Input value."`
 - `"Executes processing."`
+
+---
+
+### 4. `McpServerResourceType`
+
+resource をまとめるクラスに付与します。
+
+```csharp
+[McpServerResourceType]
+public sealed class ServerResourceCatalog
+{
+}
+```
+
+#### 意味
+
+- このクラスに resource 定義が含まれることを SDK に伝える
+- `WithResources<T>()` や `WithResourcesFromAssembly(...)` の対象になる
+
+#### どう利用されるか
+
+- `resources/list`
+- `resources/read`
+- `resources/templates/list`
+
+といった resource 系の capability を構成するための探索対象になる。
+
+---
+
+### 5. `McpServerResource`
+
+MCP resource として公開するメソッドに付与します。
+
+```csharp
+[McpServerResource(UriTemplate = "resource://server/info", MimeType = "text/plain", Name = "server-info", Title = "Server Info")]
+public static string GetServerInfo() => "...";
+```
+
+#### 主な属性値
+
+- `UriTemplate`
+  - resource の識別子またはテンプレート
+  - クライアントはこの URI を使って `resources/read` する
+- `MimeType`
+  - 返すデータの MIME type
+  - 表示方法や解釈に使われる
+- `Name`
+  - 安定した論理名
+  - クライアントやモデルが resource を識別しやすくなる
+- `Title`
+  - UI 表示向けのタイトル
+
+#### どう利用されるか
+
+- `resources/list` で resource 一覧に出る
+- `resources/templates/list` でテンプレート扱いの resource が出る
+- `resources/read` で実体を返す
+
+---
+
+### 6. `McpServerPromptType`
+
+prompt をまとめるクラスに付与します。
+
+```csharp
+[McpServerPromptType]
+public sealed class ServerPromptCatalog
+{
+}
+```
+
+#### 意味
+
+- このクラスに prompt 定義が含まれることを SDK に伝える
+- `WithPrompts<T>()` や `WithPromptsFromAssembly(...)` の対象になる
+
+#### どう利用されるか
+
+- `prompts/list`
+- `prompts/get`
+
+の公開対象を構成する。
+
+---
+
+### 7. `McpServerPrompt`
+
+prompt として公開するメソッドに付与します。
+
+```csharp
+[McpServerPrompt(Name = "server-overview", Title = "Server Overview")]
+public static GetPromptResult GetServerOverview(string audience = "developer") => ...;
+```
+
+#### 主な属性値
+
+- `Name`
+  - prompt の安定名
+  - `prompts/get` の対象識別子になる
+- `Title`
+  - UI 表示用の見出し
+- `Description`
+  - 何のための prompt かを説明する
+
+#### どう利用されるか
+
+- `prompts/list` で prompt 一覧に出る
+- `prompts/get` で引数付きテンプレートとして取得される
 
 ---
 
@@ -338,6 +456,182 @@ LLMの判断を補助するための専門ツールです。
 ---
 
 ## よくある設計パターン
+
+## `AddMcpServer` で設定できる主な項目
+
+このサンプルでは `AddMcpServer(options => ...)` に対して、利用価値が高い項目をできるだけ明示設定する方針を採っています。
+
+```csharp
+builder.Services.AddMcpServer(options =>
+{
+    // 代表例
+    options.ProtocolVersion = "2024-11-05";
+    options.ServerInstructions = "...";
+    options.InitializationTimeout = TimeSpan.FromSeconds(30);
+    options.ScopeRequests = true;
+    options.SendTaskStatusNotifications = true;
+    options.MaxSamplingOutputTokens = 2048;
+});
+```
+
+### `McpServerOptions` の主要項目
+
+#### `ProtocolVersion`
+
+- サーバーが前提とする MCP プロトコルバージョン
+- `initialize` 応答時の互換性判断に使われる
+
+#### `ServerInfo`
+
+- サーバー名、タイトル、バージョン、説明、Web サイト URL などのメタデータ
+- クライアントに「このサーバーが何者か」を伝える
+
+#### `ServerInstructions`
+
+- クライアントやモデル向けの利用ガイド
+- 「どの tool / resource / prompt をどう使うべきか」の説明に使う
+
+#### `InitializationTimeout`
+
+- `initialize` フェーズで許容するタイムアウト
+- 遅い初期化処理を持つ場合のフェイルファスト制御に使う
+
+#### `ScopeRequests`
+
+- リクエストごとにスコープを分けるかどうか
+- DI スコープ境界や request 単位のサービス寿命に影響する
+
+#### `SendTaskStatusNotifications`
+
+- タスク進捗通知を有効にするかどうか
+- 長時間処理の可視化に使う
+
+#### `MaxSamplingOutputTokens`
+
+- sampling 系で返す最大トークン数の上限
+- 出力サイズ制御に使う
+
+#### `Capabilities`
+
+- サーバーがどの MCP capability を提供するかを宣言する
+- `initialize` 応答の中心情報
+
+このサンプルでは次を明示設定している。
+
+- `Logging`
+- `Prompts`
+- `Resources`
+- `Tools`
+- `Completions`
+- `Extensions`
+- `Experimental`
+
+##### `PromptsCapability.ListChanged`
+
+- prompt 一覧の変更通知をサポートするか
+
+##### `ResourcesCapability.ListChanged`
+
+- resource 一覧の変更通知をサポートするか
+
+##### `ResourcesCapability.Subscribe`
+
+- resource subscribe / unsubscribe をサポートするか
+
+##### `ToolsCapability.ListChanged`
+
+- tool 一覧の変更通知をサポートするか
+
+#### `Handlers`
+
+- 明示的に上書き・追加する各種リクエストハンドラー
+
+この SDK では少なくとも次がある。
+
+- `ListToolsHandler`
+- `CallToolHandler`
+- `ListResourcesHandler`
+- `ListResourceTemplatesHandler`
+- `ReadResourceHandler`
+- `SubscribeToResourcesHandler`
+- `UnsubscribeFromResourcesHandler`
+- `ListPromptsHandler`
+- `GetPromptHandler`
+- `CompleteHandler`
+- `SetLoggingLevelHandler`
+
+このサンプルでは特に以下を明示している。
+
+- `SetLoggingLevelHandler`
+  - クライアントからの logging level 変更要求を受ける
+- `CompleteHandler`
+  - prompt / tool パラメーター補完候補を返す
+- `SubscribeToResourcesHandler`
+  - 非対応であることを明示的に返す
+- `UnsubscribeFromResourcesHandler`
+  - 非対応であることを明示的に返す
+
+#### `Filters`
+
+- message 単位・request 単位のパイプラインフィルター
+- ログ、認可、検証、監査に利用できる
+
+##### `Filters.Message`
+
+- 受信メッセージ / 送信メッセージ全体に対するフィルター
+- このサンプルでは incoming / outgoing の debug ログを付与している
+
+##### `Filters.Request`
+
+- 各 MCP メソッドごとのフィルター
+- このサンプルでは以下に対して debug ログを付与している
+
+- `tools/list`
+- `tools/call`
+- `resources/list`
+- `resources/templates/list`
+- `resources/read`
+- `prompts/list`
+- `prompts/get`
+- `completion`
+- `logging/setLevel`
+- `resources/subscribe`
+- `resources/unsubscribe`
+
+#### `ToolCollection` / `ResourceCollection` / `PromptCollection`
+
+- 登録済みの tool / resource / prompt の集合
+- 通常は `WithTools<T>()`、`WithResources<T>()`、`WithPrompts<T>()` で構成する
+
+#### `TaskStore`
+
+- MCP task を保存・追跡するストア
+- 長時間処理や task API を本格運用する場合の拡張点
+
+#### `KnownClientInfo` / `KnownClientCapabilities`
+
+- 特定の既知クライアントに合わせた最適化や制御に使える情報
+- 今回のサンプルでは積極利用していないが、クライアント差分吸収のためのフックになる
+
+### どのような意味で利用されるか
+
+`AddMcpServer` の設定は、主に次の 3 箇所で利用される。
+
+1. **`initialize` 応答**  
+   `ProtocolVersion`、`ServerInfo`、`Capabilities`、`ServerInstructions` がクライアントへ通知される。
+
+2. **各種 request の実行パイプライン**  
+   `Handlers` と `Filters` が request 処理中に使われる。
+
+3. **実行時の安全性・運用性**  
+   `InitializationTimeout`、`ScopeRequests`、`MaxSamplingOutputTokens`、`TaskStore` などが運用特性に効く。
+
+### 設定方針
+
+- capability は「実装しているものだけ」を有効化する
+- subscribe 非対応なら capability と handler の両方で意図を一致させる
+- サーバー説明はクライアントが読んで判断できる文章にする
+- filter は便利だが、過剰なログ出力は避ける
 
 ### パターン1: 小さく明確なツール
 
