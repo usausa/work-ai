@@ -416,3 +416,16 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# AI
+CLAUDE.local.md
+.claude/settings.local.json
+.chrome-temp
+.edge-temp
+.foundry-local-data
+.dotnet-home
+.dotnet
+
+# Custom
+desktop.ini
+__*
