@@ -141,6 +141,45 @@ curl -X POST http://localhost:5080/mcp \
 > セッション管理を省略したいだけなら `WithHttpTransport(o => o.Stateless = true)` でステートレス化できる
 > (リソース購読など状態を必要とする MCP 機能は使えなくなる)。
 
+### Codex 接続時の `resources/list` / `resources/templates/list` 警告について
+
+Codex など一部の MCP クライアントは、接続直後に `tools/list` だけでなく
+`resources/list` や `resources/templates/list` も問い合わせる。
+
+このサンプルは **tool のみ** を公開しており、resource / resource template のハンドラーは登録していないため、
+以下のようなログは現状では想定内。
+
+- `Method 'resources/list' is not available.`
+- `Method 'resources/templates/list' is not available.`
+
+これは HTTP サーバーが異常終了していることを意味しない。単に、その MCP 機能をこのサンプルでまだ提供していないだけ。
+
+#### 何が起きているか
+
+- `tools/list` は正常に処理される
+- Codex が追加で `resources/list` / `resources/templates/list` を呼ぶ
+- サーバー側に対応ハンドラーがないため warning が出る
+- クライアントが tools だけ使うなら、実用上はそのままでも動くことがある
+
+#### 対応方針
+
+1. **warning を許容する**  
+   tool 専用サーバーとして割り切る最小構成。
+
+2. **resources / prompt templates を実装する**  
+   Codex などが期待する capability を満たしたい場合の本命対応。
+
+3. **ログレベルを調整する**  
+   挙動はそのままで warning の見え方だけ抑える方法。
+
+#### 現時点のこのサンプルの位置づけ
+
+- 対応済み: `tools/*`
+- 未対応: `resources/*`
+- 未対応: `resources/templates/*`
+
+Codex との完全な相性を重視するなら、次の段階として resource 一覧 / template 一覧の空実装または実データ実装を追加するのがよい。
+
 ## なぜ HTTP は AOT 対応にしないのか
 
 ASP.NET Core 自体は AOT 対応路線にあるものの、

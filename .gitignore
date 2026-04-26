@@ -422,8 +422,8 @@ CLAUDE.local.md
 .claude/settings.local.json
 .chrome-temp
 .edge-temp
-.foundry-local-data
 .dotnet-home
+.foundry-local-data
 .dotnet
 
 # Custom

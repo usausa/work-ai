@@ -13,6 +13,8 @@ builder.Logging.AddConsole(options =>
 builder.Services
     .AddMcpServer()
     .WithStdioServerTransport()
+    .WithResources<ServerResourceCatalog>()
+    .WithPrompts<ServerPromptCatalog>()
     .WithTools<EchoTool>()
     .WithTools<CalculatorTool>()
     .WithTools<SystemInfoTool>();

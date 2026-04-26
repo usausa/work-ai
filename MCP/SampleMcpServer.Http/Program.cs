@@ -5,6 +5,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddMcpServer()
     .WithHttpTransport()
+    .WithResources<ServerResourceCatalog>()
+    .WithPrompts<ServerPromptCatalog>()
     .WithTools<EchoTool>()
     .WithTools<CalculatorTool>()
     .WithTools<SystemInfoTool>();

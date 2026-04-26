@@ -1,4 +1,8 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="MCP_Tools_Guide.ja.md" />
+    <File Path="README.md" />
+  </Folder>
   <Project Path="SampleMcpServer.Http/SampleMcpServer.Http.csproj" />
   <Project Path="SampleMcpServer.Stdio/SampleMcpServer.Stdio.csproj" />
   <Project Path="SampleMcpServer.Tools/SampleMcpServer.Tools.csproj" />
