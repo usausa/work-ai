@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet *)",
+      "WebFetch(domain:www.nuget.org)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:devblogs.microsoft.com)",
+      "WebFetch(domain:csharp.sdk.modelcontextprotocol.io)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(curl *)",
+      "Bash(python -c \"import json,sys; [print\\(x['name']\\) for x in json.load\\(sys.stdin\\)]\")",
+      "Read(//c/Program Files \\(x86\\)/Microsoft Visual Studio/Installer/**)",
+      "Read(//c/Program Files/Microsoft Visual Studio/Installer/**)",
+      "Bash(export PATH=\"/c/Program Files \\(x86\\)/Microsoft Visual Studio/Installer:$PATH\")",
+      "Bash(./sample-mcp-server.exe)",
+      "PowerShell(Remove-Item *)",
+      "PowerShell(Get-ChildItem \"D:\\\\WorkGenerative\\\\MCP\\\\SampleMcpServer\" -Recurse -Force -ErrorAction Continue 2>&1; \"---\"; Test-Path \"D:\\\\WorkGenerative\\\\MCP\\\\SampleMcpServer\")",
+      "Bash(cmd.exe //c \"rd /s /q D:\\\\WorkGenerative\\\\MCP\\\\SampleMcpServer\")",
+      "Bash(dotnet run *)",
+      "Bash(echo \"started PID=$!\")",
+      "Bash(timeout 5 ./sample-mcp-server-stdio.exe)",
+      "Bash(kill 1732)"
+    ]
+  }
+}
