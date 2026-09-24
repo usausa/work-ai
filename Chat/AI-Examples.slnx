@@ -18,7 +18,6 @@
     <File Path="AGENTS.md" />
     <File Path="AI-Examples.sln.DotSettings" />
     <File Path="Analyzers.ruleset" />
-    <File Path="CLAUDE.md" />
     <File Path="Directory.Build.props" />
     <File Path="Directory.Build.targets" />
     <File Path="README.md" />
