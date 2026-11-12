@@ -1,3 +1,6 @@
 <Solution>
   <Project Path="WorkFoundaryLocal/WorkFoundaryLocal.csproj" />
+  <Folder Name="/Solution Items/">
+    <File Path="AGENTS.md" />
+  </Folder>
 </Solution>
